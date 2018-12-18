@@ -3,6 +3,11 @@ pipeline {
 
     tools {nodejs "Node810"}
 
+    environment {
+        BLOG_LINK_ADMIN_KEY = credentials('BLOG_LINK_ADMIN_KEY')
+    }
+
+
     options {
         buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
     }
