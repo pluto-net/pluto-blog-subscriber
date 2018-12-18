@@ -48,10 +48,7 @@ const BlogLinkModel = dynamoose.model<BlogLink, { id: string }>(
 class DynamoDBManager {
   getBlogLinkByLink(link: string) {
     return new Promise((resolve, reject) => {
-      BlogLinkModel.queryOne({ link: { eq: link } }, function(
-        err,
-        linkResponse
-      ) {
+      BlogLinkModel.scan({ link: { eq: link } }, function(err, linkResponse) {
         if (err) {
           reject(err);
         } else {
