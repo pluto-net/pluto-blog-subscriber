@@ -5,7 +5,6 @@ interface Params {
 }
 
 export async function addBlogLink(event, _context, _callback) {
-  // getNewLinkFromEventBody();
   const body = event.body;
 
   if (!body) {
@@ -31,6 +30,7 @@ export async function addBlogLink(event, _context, _callback) {
   }
 
   // check it already exists in DB
+
   // save it to DB
   // return the latest list
 
