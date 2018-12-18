@@ -4,12 +4,10 @@ import DynamoDBManager from "./model";
 
 export async function getBlogList(event, _context, _callback) {
   const qs = event.queryStringParameters;
-
   let key: string = "";
   if (qs) {
     key = qs.key;
   }
-
   const isAdmin = key && key === process.env["BLOG_LINK_ADMIN_KEY"];
 
   try {

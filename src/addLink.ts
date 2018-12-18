@@ -11,12 +11,27 @@ interface Params {
 
 export async function addBlogLink(event, _context, _callback) {
   const body = event.body;
+  const qs = event.queryStringParameters;
+  let key: string = "";
+  if (qs) {
+    key = qs.key;
+  }
+  const isAdmin = key && key === process.env["BLOG_LINK_ADMIN_KEY"];
 
   if (!body) {
     return {
       statusCode: 400,
       body: JSON.stringify({
         message: "No Request Body!"
+      })
+    };
+  }
+
+  if (!isAdmin) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({
+        message: "You are not authorized user"
       })
     };
   }
