@@ -1,5 +1,9 @@
 "use strict";
 
+interface Params {
+  link: string;
+}
+
 export async function addBlogLink(event, _context, _callback) {
   // getNewLinkFromEventBody();
   const body = event.body;
@@ -13,7 +17,18 @@ export async function addBlogLink(event, _context, _callback) {
     };
   }
 
-  console.log(body);
+  let params: Params;
+  try {
+    params = JSON.parse(body);
+    console.log(params);
+  } catch (err) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: "You sent malformed request body"
+      })
+    };
+  }
 
   // check it already exists in DB
   // save it to DB
