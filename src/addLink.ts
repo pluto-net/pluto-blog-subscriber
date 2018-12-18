@@ -1,6 +1,7 @@
 "use strict";
 
 import * as uuid from "uuid/v1";
+import * as url from "url";
 import DynamoDBManager from "./model";
 
 interface Params {
@@ -33,11 +34,15 @@ export async function addBlogLink(event, _context, _callback) {
   }
 
   const id = uuid();
+  const linkUrlObject = url.parse(params.link);
+  const cleanUrl = `${linkUrlObject.protocol}//${linkUrlObject.host}${
+    linkUrlObject.pathname
+  }`;
 
   try {
     await DynamoDBManager.putBlogLink({
       id: id,
-      link: params.link,
+      link: cleanUrl,
       active: false
     });
   } catch (_err) {
@@ -53,9 +58,9 @@ export async function addBlogLink(event, _context, _callback) {
   // return the latest list
 
   return {
-    statusCode: 400,
+    statusCode: 200,
     body: JSON.stringify({
-      message: "You sent malformed request body"
+      message: `Succeed to save ${id}`
     })
   };
 }
