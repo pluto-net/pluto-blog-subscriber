@@ -33,7 +33,7 @@ pipeline {
                         sh 'npm --version'
                         sh 'npm ci'
                     } catch (err) {
-                        slackSend color: "danger", channel: "#ci-build", failOnError: true, message: "Build Failed at NPM INSTAL: ${env.BRANCH_NAME}"
+                        slackSend color: "danger", channel: "#ci-build", failOnError: true, message: "Build Failed at NPM INSTALL: ${env.BRANCH_NAME}"
                         throw err
                     }
                 }

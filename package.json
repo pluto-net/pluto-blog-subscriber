@@ -4,6 +4,7 @@
   "description": "",
   "main": "handler.js",
   "scripts": {
+    "deploy": "sls deploy -s prod",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
