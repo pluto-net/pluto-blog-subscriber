@@ -1,6 +1,7 @@
 "use strict";
 
-export async function hello(event, _context, _callback) {
+export async function addBlogLink(event, _context, _callback) {
+  console.log(event);
   return {
     statusCode: 200,
     body: JSON.stringify({
