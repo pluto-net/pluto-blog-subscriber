@@ -2,7 +2,7 @@
 
 import * as uuid from "uuid/v1";
 import * as url from "url";
-import DynamoDBManager from "./model";
+import DynamoDBManager, { BlogLink } from "./model";
 import dynamoDBManger from "./model";
 
 interface Params {
@@ -40,18 +40,41 @@ export async function addBlogLink(event, _context, _callback) {
     linkUrlObject.pathname
   }`;
 
+  let blogLink: BlogLink | null = null;
   try {
-    await DynamoDBManager.getBlogLinkByLink(cleanUrl);
+    const res: any = await DynamoDBManager.getBlogLinkByLink(cleanUrl);
+    // TODO: REMOVE BELOW CONSOLE
+    console.log(res);
+
+    if (res && res.count > 0) {
+      blogLink = res[0];
+    }
   } catch (err) {
     console.error(err);
   }
 
+  if (blogLink) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: "link already exists."
+      })
+    };
+  }
+
   try {
-    await DynamoDBManager.putBlogLink({
+    const res = await DynamoDBManager.putBlogLink({
       id: id,
       link: cleanUrl,
       active: false
     });
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        link: res.originalItem()
+      })
+    };
   } catch (_err) {
     return {
       statusCode: 400,
@@ -60,14 +83,4 @@ export async function addBlogLink(event, _context, _callback) {
       })
     };
   }
-
-  // check it already exists in DB
-  // return the latest list
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: `Succeed to save ${id}`
-    })
-  };
 }

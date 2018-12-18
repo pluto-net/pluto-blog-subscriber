@@ -1,8 +1,9 @@
 import * as dynamoose from "dynamoose";
+import { ScanInterface } from "dynamoose";
 
 const TABLE_NAME = "blogSubscriberTable";
 
-interface BlogLink {
+export interface BlogLink {
   id: string;
   link: string;
   active: boolean;
@@ -46,17 +47,13 @@ const BlogLinkModel = dynamoose.model<BlogLink, { id: string }>(
 );
 
 class DynamoDBManager {
-  getBlogLinkByLink(link: string) {
-    return new Promise((resolve, reject) => {
-      BlogLinkModel.scan({ link: { eq: link } }, function(err, linkResponse) {
-        if (err) {
-          reject(err);
-        } else {
-          console.log(linkResponse);
-          resolve(linkResponse);
-        }
-      });
-    });
+  async getBlogLinkByLink(link: string) {
+    try {
+      const res = await BlogLinkModel.scan({ link: { eq: link } }).exec();
+      return res;
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   async putBlogLink(blogLink: BlogLink) {
