@@ -75,6 +75,18 @@ class DynamoDBManager {
     }
   }
 
+  async getBlogList() {
+    try {
+      const res = await BlogLinkModel.scan()
+        .limit(100)
+        .exec();
+      return res;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }
+
   async putBlogLink(blogLink: BlogLink) {
     try {
       const blogLinkModel = new BlogLinkModel(blogLink);

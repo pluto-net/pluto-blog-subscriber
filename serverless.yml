@@ -40,6 +40,14 @@ functions:
           method: put
           cors: true
 
+  getBlogList:
+    handler: "src/blogLinkHandler.getBlogList"
+    events:
+      - http:
+          path: blogLinks
+          method: get
+          cors: true
+
 resources:
   Resources:
     blogSubscriberTable:
