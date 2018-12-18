@@ -24,12 +24,20 @@ provider:
         - { "Fn::GetAtt": ["blogSubscriberTable", "Arn"] }
 
 functions:
-  hello:
-    handler: "src/addLink.addBlogLink"
+  addBlogLink:
+    handler: "src/blogLinkHandler.addBlogLink"
     events:
       - http:
-          path: addBlogLink
+          path: blogLinks
           method: post
+          cors: true
+
+  toggleBlogLink:
+    handler: "src/blogLinkHandler.toggleBlogLinkStatus"
+    events:
+      - http:
+          path: blogLinks
+          method: put
           cors: true
 
 resources:

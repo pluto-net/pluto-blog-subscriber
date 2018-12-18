@@ -65,6 +65,16 @@ class DynamoDBManager {
     }
   }
 
+  async getBlogInfoById(id: string) {
+    try {
+      const res = await BlogLinkModel.get({ id });
+      return res;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }
+
   async putBlogLink(blogLink: BlogLink) {
     try {
       const blogLinkModel = new BlogLinkModel(blogLink);
