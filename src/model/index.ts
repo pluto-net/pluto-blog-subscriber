@@ -7,7 +7,7 @@ interface BlogLink {
   link: string;
   active: boolean;
   startTime?: Date[];
-  endTitme?: Date[];
+  endTime?: Date[];
   createdAt?: Date;
   updatedAt?: Date;
 }
