@@ -3,6 +3,7 @@
 import * as uuid from "uuid/v1";
 import * as url from "url";
 import DynamoDBManager from "./model";
+import dynamoDBManger from "./model";
 
 interface Params {
   link: string;
@@ -38,6 +39,12 @@ export async function addBlogLink(event, _context, _callback) {
   const cleanUrl = `${linkUrlObject.protocol}//${linkUrlObject.host}${
     linkUrlObject.pathname
   }`;
+
+  try {
+    await DynamoDBManager.getBlogLinkByLink(cleanUrl);
+  } catch (err) {
+    console.error(err);
+  }
 
   try {
     await DynamoDBManager.putBlogLink({

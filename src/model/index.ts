@@ -46,6 +46,22 @@ const BlogLinkModel = dynamoose.model<BlogLink, { id: string }>(
 );
 
 class DynamoDBManager {
+  getBlogLinkByLink(link: string) {
+    return new Promise((resolve, reject) => {
+      BlogLinkModel.queryOne({ link: { eq: link } }, function(
+        err,
+        linkResponse
+      ) {
+        if (err) {
+          reject(err);
+        } else {
+          console.log(linkResponse);
+          resolve(linkResponse);
+        }
+      });
+    });
+  }
+
   async putBlogLink(blogLink: BlogLink) {
     try {
       const blogLinkModel = new BlogLinkModel(blogLink);
