@@ -3,7 +3,7 @@
 import * as uuid from "uuid/v1";
 import * as url from "url";
 import DynamoDBManager, { BlogLink } from "./model";
-import dynamoDBManger from "./model";
+import { getOgInfoFromUrl, OgInformation } from "./sideEffect/crawOgInfo";
 
 interface Params {
   link: string;
@@ -24,7 +24,6 @@ export async function addBlogLink(event, _context, _callback) {
   let params: Params;
   try {
     params = JSON.parse(body);
-    console.log(params);
   } catch (err) {
     return {
       statusCode: 400,
@@ -43,8 +42,6 @@ export async function addBlogLink(event, _context, _callback) {
   let blogLink: BlogLink | null = null;
   try {
     const res: any = await DynamoDBManager.getBlogLinkByLink(cleanUrl);
-    // TODO: REMOVE BELOW CONSOLE
-    console.log(res);
 
     if (res && res.count > 0) {
       blogLink = res[0];
@@ -62,11 +59,31 @@ export async function addBlogLink(event, _context, _callback) {
     };
   }
 
+  let ogBlogInfo: OgInformation;
+  try {
+    const res = await getOgInfoFromUrl(cleanUrl);
+    if (res) {
+      ogBlogInfo = res;
+    } else {
+      throw new Error();
+    }
+  } catch (err) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: "Not available blog link."
+      })
+    };
+  }
+
   try {
     const res = await DynamoDBManager.putBlogLink({
       id: id,
       link: cleanUrl,
-      active: false
+      active: false,
+      ogImageUrl: ogBlogInfo.ogImageUrl,
+      ogTitle: ogBlogInfo.ogTitle,
+      ogDescription: ogBlogInfo.ogDescription
     });
 
     return {

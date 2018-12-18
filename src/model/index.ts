@@ -1,9 +1,9 @@
 import * as dynamoose from "dynamoose";
-import { ScanInterface } from "dynamoose";
+import { OgInformation } from "../sideEffect/crawOgInfo";
 
 const TABLE_NAME = "blogSubscriberTable";
 
-export interface BlogLink {
+export interface BlogLink extends OgInformation {
   id: string;
   link: string;
   active: boolean;
@@ -27,6 +27,15 @@ const blogLinkSchema = new Schema(
     active: {
       type: Boolean,
       required: true
+    },
+    ogImageUrl: {
+      type: String
+    },
+    ogTitle: {
+      type: String
+    },
+    ogDescription: {
+      type: String
     },
     startTime: {
       type: [Date]
@@ -59,7 +68,6 @@ class DynamoDBManager {
   async putBlogLink(blogLink: BlogLink) {
     try {
       const blogLinkModel = new BlogLinkModel(blogLink);
-
       const res = await blogLinkModel.save();
       return res;
     } catch (err) {
@@ -67,22 +75,6 @@ class DynamoDBManager {
       throw new Error(err);
     }
   }
-
-  // async updateDynamoDB(paper: Paper) {
-  //   try {
-  //     await PaperModel.update(
-  //       { paper_id: paper.paperId },
-  //       {
-  //         paper_pdf: paper.paperPdf,
-  //         process_status: paper.processStatus,
-  //         paper_images: paper.paperImages
-  //       }
-  //     );
-  //   } catch (err) {
-  //     console.error("ERROR OCCURRED AT UPDATE DYNAMO_DB ITEM");
-  //     throw new Error(err);
-  //   }
-  // }
 }
 
 const dynamoDBManger = new DynamoDBManager();
