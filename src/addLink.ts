@@ -4,6 +4,7 @@ import * as uuid from "uuid/v1";
 import * as url from "url";
 import DynamoDBManager, { BlogLink } from "./model";
 import { getOgInfoFromUrl, OgInformation } from "./sideEffect/crawOgInfo";
+import makeErrorResponse from "./helper/makeErrorResponse";
 
 interface Params {
   link: string;
@@ -19,33 +20,18 @@ export async function addBlogLink(event, _context, _callback) {
   const isAdmin = key && key === process.env["BLOG_LINK_ADMIN_KEY"];
 
   if (!body) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "No Request Body!"
-      })
-    };
+    return makeErrorResponse(400, "No Request Body!");
   }
 
   if (!isAdmin) {
-    return {
-      statusCode: 403,
-      body: JSON.stringify({
-        message: "You are not authorized user"
-      })
-    };
+    return makeErrorResponse(403, "You are not authorized user");
   }
 
   let params: Params;
   try {
     params = JSON.parse(body);
   } catch (err) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "You sent malformed request body"
-      })
-    };
+    return makeErrorResponse(400, "You sent malformed request body");
   }
 
   const id = uuid();
@@ -66,12 +52,7 @@ export async function addBlogLink(event, _context, _callback) {
   }
 
   if (blogLink) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "link already exists."
-      })
-    };
+    return makeErrorResponse(400, "link already exists.");
   }
 
   let ogBlogInfo: OgInformation;
@@ -83,12 +64,7 @@ export async function addBlogLink(event, _context, _callback) {
       throw new Error();
     }
   } catch (err) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: "Not available blog link."
-      })
-    };
+    return makeErrorResponse(500, "Not available blog link.");
   }
 
   try {
@@ -103,16 +79,14 @@ export async function addBlogLink(event, _context, _callback) {
 
     return {
       statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*"
+      },
       body: JSON.stringify({
         link: res.originalItem()
       })
     };
   } catch (_err) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "Failed to save link item to DynamoDB."
-      })
-    };
+    return makeErrorResponse(400, "Failed to save link item to DynamoDB.");
   }
 }

@@ -1,6 +1,7 @@
 "use strict";
 
 import DynamoDBManager from "./model";
+import makeErrorResponse from "./helper/makeErrorResponse";
 
 export async function getBlogList(event, _context, _callback) {
   const qs = event.queryStringParameters;
@@ -15,6 +16,9 @@ export async function getBlogList(event, _context, _callback) {
 
     return {
       statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*"
+      },
       body: JSON.stringify({
         // HACK: Move below logic to Query(Scan) Logic
         blogList: isAdmin ? blogList : blogList.filter(blog => blog.active)
@@ -22,11 +26,6 @@ export async function getBlogList(event, _context, _callback) {
     };
   } catch (err) {
     console.error(err);
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "Failed to get blog info list to DynamoDB."
-      })
-    };
+    return makeErrorResponse(400, "Failed to get blog info list to DynamoDB.");
   }
 }

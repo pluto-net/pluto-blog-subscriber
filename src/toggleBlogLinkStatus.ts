@@ -1,6 +1,7 @@
 "use strict";
 
 import DynamoDBManager, { BlogLink } from "./model";
+import makeErrorResponse from "./helper/makeErrorResponse";
 
 interface Params {
   id: string;
@@ -16,33 +17,18 @@ export async function toggleBlogLinkStatus(event, _context, _callback) {
   const isAdmin = key && key === process.env["BLOG_LINK_ADMIN_KEY"];
 
   if (!body) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "No Request Body!"
-      })
-    };
+    return makeErrorResponse(400, "No Request Body!");
   }
 
   if (!isAdmin) {
-    return {
-      statusCode: 403,
-      body: JSON.stringify({
-        message: "You are not authorized user"
-      })
-    };
+    return makeErrorResponse(403, "You are not authorized user");
   }
 
   let params: Params;
   try {
     params = JSON.parse(body);
   } catch (err) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "You sent malformed request body"
-      })
-    };
+    return makeErrorResponse(400, "You sent malformed request body");
   }
 
   let blogLink: BlogLink;
@@ -53,12 +39,7 @@ export async function toggleBlogLinkStatus(event, _context, _callback) {
     }
     blogLink = res;
   } catch (err) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "Can't get blog Information from DynamoDB"
-      })
-    };
+    return makeErrorResponse(400, "Can't get blog Information from DynamoDB");
   }
 
   const startLength = (blogLink.startTime && blogLink.startTime.length) || 0;
@@ -83,17 +64,15 @@ export async function toggleBlogLinkStatus(event, _context, _callback) {
 
     return {
       statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*"
+      },
       body: JSON.stringify({
         link: res.originalItem()
       })
     };
   } catch (err) {
     console.error(err);
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "Failed to save link item to DynamoDB."
-      })
-    };
+    return makeErrorResponse(400, "Failed to save link item to DynamoDB.");
   }
 }
