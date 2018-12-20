@@ -18,7 +18,9 @@ export async function getOgInfoFromUrl(
     const rawBlogHtml = res.data;
     const $ = cheerio.load(rawBlogHtml);
     const ogImageUrl = $("meta[property='og:image']").attr("content");
-    const ogTitle = $("meta[property='og:title']").attr("content");
+    const ogTitle = $("meta[property='og:title']")
+      .attr("content")
+      .replace(" – Pluto Network – Medium", "");
     const ogDescription = $("meta[property='og:description']").attr("content");
 
     return {
